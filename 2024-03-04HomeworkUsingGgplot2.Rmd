@@ -1,0 +1,284 @@
+---
+title: "MATH 660 SP24 Homework 2 on ggplot2"
+author: "Dontese Cocchio"
+date: "Due 2023-03-04 11:59PM (Monday)"
+output:
+  html_document: default
+  toc: true
+theme: united
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this homework we deal with datasets from the following link:
+
+<https://github.com/plotly/datasets>
+
+Please use the functions in the `tidyverse`, i.e., the functions introduced in the textbook after Chapter 4,
+to get the full score.
+
+## Layers
+
+## Question 1
+
+We use the wind rose data.
+
+<https://github.com/plotly/datasets/blob/master/wind_rose.csv>
+
+Read the input and "lengthens" the data so that it is reshaped into long format.
+The reshaped table will be called `wind_rose_long_data`.
+
+Please filter out the directions "N", "NE", "E", "SE", "S", "SW", "W", and "NW",
+and create the figure shown below.
+
+Hint: For barplot, you may want to use `geom_bar()`. You may want to use the
+`ggarrange()` function in the `ggpubr` package. You may use `theme_minimal()`
+for the theme.
+
+```{r Q1}
+library(tidyverse)
+library(ggpubr)
+wind_rose_wide_data <- read_csv("https://raw.githubusercontent.com/plotly/datasets/master/wind_rose.csv")
+############################################################
+# sorting the data
+NW <- filter(wind_rose_long_data, r == "NW")
+N <- filter(wind_rose_long_data, r == "N")
+NE <- filter(wind_rose_long_data, r == "NE")
+E <- filter(wind_rose_long_data, r == "E")
+SE <- filter(wind_rose_long_data, r == "SE")
+S <- filter(wind_rose_long_data, r == "S")
+SW <- filter(wind_rose_long_data, r == "SW")
+W <- filter(wind_rose_long_data, r == "W")
+
+# individual plots
+plot1 <- ggplot(NW, aes(speed, frequency)) +
+  geom_bar(stat="identity", fill="red") +
+  ggtitle("NW") +
+  scale_y_continuous(breaks = seq(0, 2.5, by = 1), limits = c(0, 2.5)) +
+  theme_minimal()
+plot2 <- ggplot(N, aes(speed, frequency)) +
+  geom_bar(stat="identity", fill="red") +
+  ggtitle("N") +
+  scale_y_continuous(breaks = seq(0, 2.5, by = 1), limits = c(0, 2.5)) +
+  theme_minimal()
+plot3 <- ggplot(NE, aes(speed, frequency)) +
+  geom_bar(stat="identity", fill="red") +
+  ggtitle("NE") +
+  scale_y_continuous(breaks = seq(0, 2.5, by = 1), limits = c(0, 2.5)) +
+  theme_minimal()
+plot4 <- ggplot(E, aes(speed, frequency)) +
+  geom_bar(stat="identity", fill="red") +
+  ggtitle("E") +
+  scale_y_continuous(breaks = seq(0, 2.5, by = 1), limits = c(0, 2.5)) +
+  theme_minimal()
+plot5 <- ggplot(SE, aes(speed, frequency, )) +
+  geom_bar(stat="identity", fill="red") +
+  ggtitle("SE") +
+  scale_y_continuous(breaks = seq(0, 2.5, by = 1), limits = c(0, 2.5)) +
+  theme_minimal()
+plot6 <- ggplot(S, aes(speed, frequency)) +
+  geom_bar(stat="identity", fill="red") +
+  ggtitle("S") +
+  scale_y_continuous(breaks = seq(0, 2.5, by = 1), limits = c(0, 2.5)) +
+  theme_minimal()
+plot7 <- ggplot(SW, aes(speed, frequency)) +
+  geom_bar(stat="identity", fill="red") +
+  ggtitle("SW") +
+  scale_y_continuous(breaks = seq(0, 2.5, by = 1), limits = c(0, 2.5)) +
+  theme_minimal()
+plot8 <- ggplot(W, aes(speed, frequency)) +
+  geom_bar(stat="identity", fill="red") +
+  ggtitle("W") +
+  scale_y_continuous(breaks = seq(0, 2.5, by = 1), limits = c(0, 2.5)) +
+  theme_minimal()
+plot9 <- ggplot(data=NULL) + 
+  theme_void()  
+# combining plots
+ggarrange(plot1, plot2, plot3, plot8, plot9, plot4, plot7, plot6, plot5, nrow=3, ncol=3)
+############################################################
+```
+
+```{r A1}
+wind_rose_long_data <- pivot_longer(wind_rose_wide_data, `0-1`:`6+`, names_to = "speed", values_to = "frequency")
+wind_rose_long_data
+```
+
+
+## Question 2
+
+We use the tesla stock price data.
+
+Before starting this task, please read the chapter on dealing with dates and times using the `lubridate` package:
+
+> Chapter 25 Parsing dates and times:
+>
+> <http://rafalab.dfci.harvard.edu/dsbook/parsing-dates-and-times.html>
+
+
+For each year, please get the highest `close` price and the lowest `close` price.
+
+The table `max_and_min_close_per_year` will have 4 obs. of 3 variables. The column names are `year` for each year, `max_close` for the highest `close` price, and `min_close` for the lowest `close` price.
+
+Please create a line chart shown below.
+
+Hint: The color we use is `scale_color_brewer(palette = "Pastel2")` and
+the theme is `theme_classic()`.
+
+```{r Q2}
+library(tidyverse)
+library(RColorBrewer)
+tesla_stock_price <- read_csv("https://raw.githubusercontent.com/plotly/datasets/master/tesla-stock-price.csv")
+# You may notice the date format in the first row is different. Let us just set it to "2018/10/16":
+tesla_stock_price[1, "date"] <- "2018/10/16"
+library(lubridate)
+############################################################
+max_and_min_close_per_year_longer |> 
+  group_by(max_or_min) |>
+  ggplot(aes(year, stock_price, color = max_or_min)) +
+  geom_point() +
+  geom_line(aes(linetype = max_or_min)) +
+  scale_color_brewer(palette = "Pastel2")
+  theme_classic() +
+  theme(  panel.background = element_rect(fill='transparent'),
+         plot.background = element_rect(fill='transparent', color=NA),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank())
+  # still cant remove the grid in the background.
+############################################################
+```
+
+```{r A2}
+max_and_min_close_per_year = tesla_stock_price |>
+  mutate(year = year(ymd(date))) |>
+  group_by(year) |>
+  summarize(max_close = max(close),
+            min_close = min(close))
+max_and_min_close_per_year
+max_and_min_close_per_year_longer <- max_and_min_close_per_year |>
+  pivot_longer(max_close:min_close, names_to = "max_or_min", values_to = "stock_price")
+```
+
+
+## Question 3
+
+We use the Tesla stock price data.
+
+What is the Average Daily Trading Volume (ADTV) of the Tesla stock per month in year 2017?
+
+What I expect: The tibble `ADTV_in_2017` will have 12 obs. of 2 variables. The column names are `month` for each month and `ADTV` for the mean volume per month.
+
+Hint: The y axis is log10 scaled. Every month on the x axis needs to be labeled.
+For accessibility, the color palette `viridis` is color blind-friendly and is from
+the `viridis` package. The plot is a `geom_dotplot`. The theme is `theme_classic`.
+You may need to specify that the color depends on `month` as a factor and 
+use a discrete palette by specifying `discrete = TRUE` when using the `viridis` color scheme.
+
+```{r Q3}
+library(tidyverse)
+tesla_stock_price <- read_csv("https://raw.githubusercontent.com/plotly/datasets/master/tesla-stock-price.csv")
+# You may notice the date format in the first row is different. Let us just set it to "2018/10/16":
+tesla_stock_price[1, "date"] <-  "2018/10/16"
+library(lubridate)
+############################################################
+library(viridis)
+daily_volume_in_2017 |>
+  ggplot(aes(factor(month), volume, fill = factor(month))) +
+  geom_dotplot(binaxis = "y", stackdir = "center", position = 'identity', 
+               binwidth = NULL, dotsize = .7) +
+  scale_x_discrete(breaks = 1:12, labels = 1:12) +
+  scale_y_continuous(trans = "log10") +
+  labs(x = "Month", y = "Volume") +
+  scale_fill_viridis(discrete=TRUE) +
+  theme_classic()
+  # can't quite get the dots to stack as they do in your plot
+############################################################
+```
+
+
+```{r A3}
+daily_volume_in_2017 = tesla_stock_price |>
+  mutate(date = ymd(date), year = year(date), month = month(date)) |>
+  filter(year == 2017)
+daily_volume_in_2017
+```
+
+
+## Question 4
+
+In this question we analyze a dataset of United States cities.
+
+<https://github.com/plotly/datasets/blob/master/us-cities-top-1k.csv>
+
+Please find the top 10 cities by `Population`, sort by decreasing population, and only select the columns of 
+`City`, `State`, and `PopulationInMillions` (= Population / 1,000,000).
+
+
+Hint: 
+  For the color, please use `scale_color_viridis` and add `option="magma"` for the color palette and `trans = "log"` for color in log scale.
+  To unify the legends with both color and size information, please specify the same limits and breaks `limits=c(0.5, 16), breaks = c(2,4,8))` in both `scale_color_viridis` and `scale_size_continuous`. Then you need to add `guides(color=guide_legend(), size = guide_legend())` to finally merge the legends.
+
+```{r Q4}
+library(tidyverse)
+us_cities_top_1k <- read_csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+############################################################
+us_top_10_populous_cities_with_location |>
+  ggplot(aes(lon, lat, size = PopulationInMillions)) +
+  geom_point() +
+  geom_text(aes(label = City)) +
+  scale_size_continuous(name = 'PopulationInMillions', limits = c(0.5, 16), breaks = c(2, 4, 8)) +
+  scale_color_viridis(limits = c(0.5, 16), breaks = c(2, 4, 8), option = "magma", trans = "log") +
+  labs(x = "Longitude", y = "Latitude") +
+  guides(color = guide_legend(), size = guide_legend())
+
+############################################################
+```
+
+```{r A4}
+us_top_10_populous_cities_with_location <-  us_cities_top_1k |>
+  arrange(desc(Population)) |>
+  slice(1:10) |>
+  mutate(PopulationInMillions = Population / 1e6) |>
+  select(City, State, PopulationInMillions, lat, lon)
+us_top_10_populous_cities_with_location
+```
+
+
+## Question 5
+
+In this question we analyze a dataset of beers.
+
+<https://github.com/plotly/datasets/blob/master/beers.csv>
+
+Please print the names of beers (the column `beer`) from breweries in the top 10 most populous cities obtained in Question 4, arranged by descending order of `ounces`, and only retain the beers with `ounces` of greater than or equal to a pint (= 16 ounces).
+
+Please create a stacked bar plot using a color blind-friendly palette (for example, "turbo" or other palettes in the viridis package).
+
+Hint: The color palette is `scale_fill_viridis(option = "turbo")`.
+For setting the x axis, use: `theme(axis.text.x = element_text(angle = 45, vjust = 0.5))`.
+
+```{r Q5}
+library(tidyverse)
+beers <- read_csv("https://raw.githubusercontent.com/plotly/datasets/master/beers.csv")
+# Make sure you know the column names of the table `beers`:
+names(beers)
+############################################################
+beer_ounces %>% 
+  ggplot(aes(city, n, fill = ounces)) +
+  geom_bar(stat = 'identity') +
+  labs(x = 'city', y = "number of beer products", fill = 'Ounces') +
+  scale_fill_viridis(option = "turbo") +
+  theme_minimal()
+############################################################
+```
+
+```{r A5}
+beer_ounces <- beers |> 
+  inner_join(us_top_10_populous_cities_with_location, by = c("city" = "City")) |>
+  group_by(city) |>
+  count(ounces)
+beer_ounces
+```
+
